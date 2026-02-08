@@ -1,201 +1,1471 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marriage Biodata Maker</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<title>Free Marriage Biodata Maker Online | Create Wedding Biodata PDF</title>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
 
-<meta name="description" content="Create beautiful marriage biodata online for free. Fill details and download biodata PDF instantly. Perfect for wedding proposals.">
-<meta name="keywords" content="marriage biodata maker, wedding biodata format, create biodata online, biodata template PDF">
-<meta name="author" content="YourBrand">
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
 
-<style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
 
-body {
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #ff9a9e, #fad0c4);
-    min-height: 100vh;
-    padding: 20px;
-}
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
 
-.container {
-    max-width: 600px;
-    margin: auto;
-}
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+            gap: 20px;
+        }
 
-.header {
-    text-align: center;
-    margin-bottom: 20px;
-    color: white;
-}
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            opacity: 0.5;
+            transition: opacity 0.3s;
+        }
 
-.header h1 {
-    font-size: 28px;
-}
+        .step.active {
+            opacity: 1;
+        }
 
-.content-card {
-    background: rgba(255,255,255,0.9);
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
-    padding: 30px;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-}
+        .step-number {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
 
-.progress-bar {
-    width: 100%;
-    height: 8px;
-    background: #eee;
-    border-radius: 20px;
-    margin-bottom: 20px;
-}
+        .step.active .step-number {
+            background: white;
+            color: #667eea;
+        }
 
-.progress-fill {
-    height: 100%;
-    width: 33%;
-    background: linear-gradient(90deg, #ff6a88, #ff99ac);
-    border-radius: 20px;
-    transition: width 0.4s ease;
-}
+        .content-card {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
 
-input, textarea {
-    width: 100%;
-    padding: 12px;
-    margin: 10px 0;
-    border-radius: 10px;
-    border: 1px solid #ddd;
-    font-size: 16px;
-}
+        .section {
+            display: none;
+        }
 
-button {
-    padding: 12px 20px;
-    border-radius: 10px;
-    border: none;
-    cursor: pointer;
-    margin-top: 10px;
-    font-weight: 600;
-}
+        .section.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
 
-.btn-primary {
-    background: linear-gradient(45deg, #ff6a88, #ff99ac);
-    color: white;
-    width: 100%;
-}
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-.btn-primary:hover {
-    transform: scale(1.05);
-    box-shadow: 0 8px 20px rgba(255, 105, 135, 0.4);
-}
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
 
-.step {
-    display: none;
-}
+        .template-card {
+            border: 3px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
 
-.step.active {
-    display: block;
-}
+        .template-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
 
-#previewSection {
-    display: none;
-    margin-top: 20px;
-    background: white;
-    padding: 20px;
-    border-radius: 15px;
-}
+        .template-card.selected {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
 
-@media (max-width:600px) {
-    .content-card {
-        padding: 20px;
-    }
-}
-</style>
+        .template-preview {
+            height: 320px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .template-name {
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #333;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .form-section h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .photo-upload {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .photo-preview {
+            width: 150px;
+            height: 150px;
+            border: 3px dashed #ccc;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: #f9f9f9;
+        }
+
+        .photo-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-preview-text {
+            text-align: center;
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .biodata-preview {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        /* Template 1 - Classic */
+        .template-classic {
+            font-family: 'Times New Roman', serif;
+        }
+
+        .template-classic .header-section {
+            text-align: center;
+            border-bottom: 3px double #8b0000;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .template-classic h1 {
+            color: #8b0000;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .template-classic .photo-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .template-classic .photo-container img {
+            width: 150px;
+            height: 180px;
+            object-fit: cover;
+            border: 3px solid #8b0000;
+            border-radius: 5px;
+        }
+
+        .template-classic .info-section {
+            margin: 20px 0;
+        }
+
+        .template-classic .info-section h3 {
+            color: #8b0000;
+            border-bottom: 2px solid #8b0000;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+        }
+
+        .template-classic .info-row {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            padding: 8px 0;
+            border-bottom: 1px dotted #ccc;
+        }
+
+        .template-classic .info-label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* Template 2 - Modern */
+        .template-modern {
+            font-family: 'Arial', sans-serif;
+        }
+
+        .template-modern .header-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px 10px 0 0;
+            margin: -40px -40px 30px -40px;
+        }
+
+        .template-modern h1 {
+            font-size: 2.2em;
+            margin-bottom: 5px;
+        }
+
+        .template-modern .photo-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .template-modern .photo-container img {
+            width: 160px;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 5px solid white;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .template-modern .info-section {
+            margin: 25px 0;
+        }
+
+        .template-modern .info-section h3 {
+            color: #667eea;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            padding-left: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .template-modern .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .template-modern .info-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .template-modern .info-label {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .template-modern .info-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* Template 3 - Elegant */
+        .template-elegant {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(to bottom, #fff9f0 0%, #ffffff 100%);
+        }
+
+        .template-elegant .header-section {
+            text-align: center;
+            padding: 30px;
+            background: #fff;
+            border: 2px solid #d4af37;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .template-elegant h1 {
+            color: #d4af37;
+            font-size: 2.5em;
+            font-weight: 300;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .template-elegant .divider {
+            width: 100px;
+            height: 2px;
+            background: #d4af37;
+            margin: 10px auto;
+        }
+
+        .template-elegant .photo-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .template-elegant .photo-container img {
+            width: 170px;
+            height: 200px;
+            object-fit: cover;
+            border: 5px solid #d4af37;
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+        }
+
+        .template-elegant .info-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: white;
+            border-left: 3px solid #d4af37;
+        }
+
+        .template-elegant .info-section h3 {
+            color: #d4af37;
+            font-size: 1.4em;
+            font-weight: 400;
+            margin-bottom: 20px;
+        }
+
+        .template-elegant .info-row {
+            display: flex;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .template-elegant .info-label {
+            min-width: 180px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .template-elegant .info-value {
+            flex: 1;
+            color: #333;
+            font-weight: 500;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .btn-group {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .content-card {
+                padding: 20px;
+            }
+
+            .template-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .step-indicator {
+                flex-wrap: wrap;
+            }
+
+            .template-modern .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
-
 <body>
+    <div class="container">
+        <div class="header">
+            <h1>💍 Marriage Biodata Maker</h1>
+            <p>Create your perfect biodata in 3 simple steps</p>
+        </div>
 
-<div class="container">
-    <div class="header">
-        <h1>Free Online Marriage Biodata Maker</h1>
+        <div class="step-indicator">
+            <div class="step active" id="step1-indicator">
+                <div class="step-number">1</div>
+                <span>Choose Template</span>
+            </div>
+            <div class="step" id="step2-indicator">
+                <div class="step-number">2</div>
+                <span>Fill Details</span>
+            </div>
+            <div class="step" id="step3-indicator">
+                <div class="step-number">3</div>
+                <span>Preview & Download</span>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <!-- Step 1: Template Selection -->
+            <div class="section active" id="step1">
+                <h2 style="text-align: center; margin-bottom: 30px; color: #333;">Choose Your Biodata Template</h2>
+                
+                <div class="template-grid">
+                    <div class="template-card" onclick="selectTemplate('classic')">
+                        <div class="template-preview">
+                            <div style="padding: 20px; font-size: 0.7em; width: 100%;">
+                                <div style="text-align: center; border-bottom: 2px solid #8b0000; padding-bottom: 10px;">
+                                    <h3 style="color: #8b0000; margin: 0;">BIODATA</h3>
+                                </div>
+                                <div style="margin-top: 15px;">
+                                    <div style="text-align: center; margin: 10px 0;">
+                                        <div style="width: 60px; height: 70px; background: #f0f0f0; margin: 0 auto; border: 2px solid #8b0000;"></div>
+                                    </div>
+                                    <div style="margin: 8px 0; border-bottom: 1px dotted #ccc; padding: 4px 0;">
+                                        <strong>Name:</strong> <span style="color: #666;">Your Name</span>
+                                    </div>
+                                    <div style="margin: 8px 0; border-bottom: 1px dotted #ccc; padding: 4px 0;">
+                                        <strong>Age:</strong> <span style="color: #666;">25 Years</span>
+                                    </div>
+                                    <div style="margin: 8px 0; border-bottom: 1px dotted #ccc; padding: 4px 0;">
+                                        <strong>Height:</strong> <span style="color: #666;">5'6"</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="template-name">Classic Traditional</div>
+                    </div>
+
+                    <div class="template-card" onclick="selectTemplate('modern')">
+                        <div class="template-preview">
+                            <div style="padding: 15px; font-size: 0.7em; width: 100%;">
+                                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 8px; text-align: center;">
+                                    <h3 style="margin: 0;">BIODATA</h3>
+                                </div>
+                                <div style="text-align: center; margin: 12px 0;">
+                                    <div style="width: 60px; height: 60px; background: #f0f0f0; margin: 0 auto; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 10px rgba(0,0,0,0.2);"></div>
+                                </div>
+                                <div style="margin-top: 10px;">
+                                    <div style="background: #f8f9fa; padding: 8px; border-radius: 5px; margin: 5px 0;">
+                                        <div style="font-size: 0.8em; color: #666;">Name</div>
+                                        <div style="font-weight: bold;">Your Name</div>
+                                    </div>
+                                    <div style="background: #f8f9fa; padding: 8px; border-radius: 5px; margin: 5px 0;">
+                                        <div style="font-size: 0.8em; color: #666;">Age</div>
+                                        <div style="font-weight: bold;">25 Years</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="template-name">Modern Gradient</div>
+                    </div>
+
+                    <div class="template-card" onclick="selectTemplate('elegant')">
+                        <div class="template-preview">
+                            <div style="padding: 15px; font-size: 0.7em; width: 100%; background: linear-gradient(to bottom, #fff9f0 0%, #ffffff 100%);">
+                                <div style="text-align: center; padding: 15px; background: white; border: 1px solid #d4af37; border-radius: 8px;">
+                                    <h3 style="color: #d4af37; margin: 0; letter-spacing: 1px;">BIODATA</h3>
+                                    <div style="width: 40px; height: 1px; background: #d4af37; margin: 8px auto;"></div>
+                                </div>
+                                <div style="text-align: center; margin: 12px 0;">
+                                    <div style="width: 65px; height: 75px; background: #f0f0f0; margin: 0 auto; border: 3px solid #d4af37;"></div>
+                                </div>
+                                <div style="margin-top: 10px; padding: 10px; background: white; border-left: 2px solid #d4af37;">
+                                    <div style="margin: 6px 0; padding: 4px 0; border-bottom: 1px solid #f0f0f0;">
+                                        <span style="color: #666; font-style: italic;">Name:</span>
+                                        <span style="margin-left: 10px; font-weight: 500;">Your Name</span>
+                                    </div>
+                                    <div style="margin: 6px 0; padding: 4px 0; border-bottom: 1px solid #f0f0f0;">
+                                        <span style="color: #666; font-style: italic;">Age:</span>
+                                        <span style="margin-left: 10px; font-weight: 500;">25 Years</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="template-name">Elegant Gold</div>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="nextStep(2)">Continue to Fill Details →</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Form -->
+            <div class="section" id="step2">
+                <h2 style="text-align: center; margin-bottom: 30px; color: #333;">Fill Your Details</h2>
+                
+                <form id="biodataForm">
+                    <div class="form-section">
+                        <h3>📸 Photo</h3>
+                        <div class="form-group full-width">
+                            <div class="photo-upload">
+                                <div class="photo-preview" id="photoPreview">
+                                    <span class="photo-preview-text">Click to upload photo<br>(Optional)</span>
+                                </div>
+                                <input type="file" id="photoInput" accept="image/*" style="display: none;" onchange="handlePhotoUpload(event)">
+                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('photoInput').click()">Upload Photo</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>👤 Personal Information</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Full Name *</label>
+                                <input type="text" id="fullName" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Date of Birth *</label>
+                                <input type="date" id="dob" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Age *</label>
+                                <input type="number" id="age" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Gender *</label>
+                                <select id="gender" required>
+                                    <option value="">Select</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Height *</label>
+                                <input type="text" id="height" placeholder="e.g., 5'6&quot;" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Weight</label>
+                                <input type="text" id="weight" placeholder="e.g., 60 kg">
+                            </div>
+                            <div class="form-group">
+                                <label>Marital Status *</label>
+                                <select id="maritalStatus" required>
+                                    <option value="">Select</option>
+                                    <option value="Never Married">Never Married</option>
+                                    <option value="Divorced">Divorced</option>
+                                    <option value="Widowed">Widowed</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Religion *</label>
+                                <input type="text" id="religion" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Caste</label>
+                                <input type="text" id="caste">
+                            </div>
+                            <div class="form-group">
+                                <label>Mother Tongue *</label>
+                                <input type="text" id="motherTongue" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>🎓 Educational & Professional Details</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Highest Education *</label>
+                                <input type="text" id="education" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Occupation *</label>
+                                <input type="text" id="occupation" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Annual Income</label>
+                                <input type="text" id="income" placeholder="e.g., 5-7 Lakhs">
+                            </div>
+                            <div class="form-group">
+                                <label>Company/Organization</label>
+                                <input type="text" id="company">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>👨‍👩‍👧‍👦 Family Details</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Father's Name *</label>
+                                <input type="text" id="fatherName" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Father's Occupation</label>
+                                <input type="text" id="fatherOccupation">
+                            </div>
+                            <div class="form-group">
+                                <label>Mother's Name *</label>
+                                <input type="text" id="motherName" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Mother's Occupation</label>
+                                <input type="text" id="motherOccupation">
+                            </div>
+                            <div class="form-group">
+                                <label>Number of Brothers</label>
+                                <input type="number" id="brothers" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label>Number of Sisters</label>
+                                <input type="number" id="sisters" value="0">
+                            </div>
+                            <div class="form-group full-width">
+                                <label>Family Type</label>
+                                <select id="familyType">
+                                    <option value="">Select</option>
+                                    <option value="Nuclear">Nuclear</option>
+                                    <option value="Joint">Joint</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>📍 Contact Information</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Mobile Number *</label>
+                                <input type="tel" id="mobile" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" id="email">
+                            </div>
+                            <div class="form-group full-width">
+                                <label>Address *</label>
+                                <textarea id="address" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>City *</label>
+                                <input type="text" id="city" required>
+                            </div>
+                            <div class="form-group">
+                                <label>State *</label>
+                                <input type="text" id="state" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>💭 About & Expectations</h3>
+                        <div class="form-grid">
+                            <div class="form-group full-width">
+                                <label>About Me</label>
+                                <textarea id="aboutMe" placeholder="Brief description about yourself..."></textarea>
+                            </div>
+                            <div class="form-group full-width">
+                                <label>Partner Expectations</label>
+                                <textarea id="expectations" placeholder="Describe your expectations from partner..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="btn-group">
+                    <button class="btn btn-secondary" onclick="prevStep(1)">← Back</button>
+                    <button class="btn btn-primary" onclick="previewBiodata()">Preview Biodata →</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Preview -->
+            <div class="section" id="step3">
+                <h2 style="text-align: center; margin-bottom: 30px; color: #333;">Preview Your Biodata</h2>
+                
+                <div id="biodataPreview"></div>
+
+                <div class="btn-group">
+                    <button class="btn btn-secondary" onclick="prevStep(2)">← Edit Details</button>
+                    <button class="btn btn-success" onclick="downloadPDF()">📥 Download as PDF</button>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="content-card">
+    <script>
+        let selectedTemplate = 'classic';
+        let photoData = null;
 
-        <div class="progress-bar">
-            <div class="progress-fill" id="progressFill"></div>
-        </div>
+        function selectTemplate(template) {
+            selectedTemplate = template;
+            document.querySelectorAll('.template-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+        }
 
-        <!-- Step 1 -->
-        <div class="step active" id="step1">
-            <h3>Personal Details</h3>
-            <input type="text" id="name" placeholder="Full Name">
-            <input type="text" id="age" placeholder="Age">
-            <input type="text" id="religion" placeholder="Religion">
-            <button class="btn-primary" onclick="nextStep(2)">Next</button>
-        </div>
+        function handlePhotoUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    photoData = e.target.result;
+                    document.getElementById('photoPreview').innerHTML = `<img src="${photoData}" alt="Photo">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
 
-        <!-- Step 2 -->
-        <div class="step" id="step2">
-            <h3>Professional Details</h3>
-            <input type="text" id="education" placeholder="Education">
-            <input type="text" id="occupation" placeholder="Occupation">
-            <button class="btn-primary" onclick="nextStep(3)">Next</button>
-        </div>
+        function nextStep(step) {
+            if (step === 2 && !selectedTemplate) {
+                alert('Please select a template first!');
+                return;
+            }
+            
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.querySelectorAll('.step').forEach(s => {
+                s.classList.remove('active');
+            });
+            
+            document.getElementById('step' + step).classList.add('active');
+            document.getElementById('step' + step + '-indicator').classList.add('active');
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
 
-        <!-- Step 3 -->
-        <div class="step" id="step3">
-            <h3>Family Details</h3>
-            <textarea id="family" placeholder="Family Details"></textarea>
-            <button class="btn-primary" onclick="generatePreview()">Generate Preview</button>
-        </div>
+        function prevStep(step) {
+            nextStep(step);
+        }
 
-        <div id="previewSection"></div>
+        function previewBiodata() {
+            const form = document.getElementById('biodataForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
 
-    </div>
-</div>
+            const data = {
+                photo: photoData,
+                fullName: document.getElementById('fullName').value,
+                dob: document.getElementById('dob').value,
+                age: document.getElementById('age').value,
+                gender: document.getElementById('gender').value,
+                height: document.getElementById('height').value,
+                weight: document.getElementById('weight').value,
+                maritalStatus: document.getElementById('maritalStatus').value,
+                religion: document.getElementById('religion').value,
+                caste: document.getElementById('caste').value,
+                motherTongue: document.getElementById('motherTongue').value,
+                education: document.getElementById('education').value,
+                occupation: document.getElementById('occupation').value,
+                income: document.getElementById('income').value,
+                company: document.getElementById('company').value,
+                fatherName: document.getElementById('fatherName').value,
+                fatherOccupation: document.getElementById('fatherOccupation').value,
+                motherName: document.getElementById('motherName').value,
+                motherOccupation: document.getElementById('motherOccupation').value,
+                brothers: document.getElementById('brothers').value,
+                sisters: document.getElementById('sisters').value,
+                familyType: document.getElementById('familyType').value,
+                mobile: document.getElementById('mobile').value,
+                email: document.getElementById('email').value,
+                address: document.getElementById('address').value,
+                city: document.getElementById('city').value,
+                state: document.getElementById('state').value,
+                aboutMe: document.getElementById('aboutMe').value,
+                expectations: document.getElementById('expectations').value
+            };
 
-<script>
+            let html = '';
 
-function nextStep(step) {
-    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-    document.getElementById('step' + step).classList.add('active');
+            if (selectedTemplate === 'classic') {
+                html = generateClassicTemplate(data);
+            } else if (selectedTemplate === 'modern') {
+                html = generateModernTemplate(data);
+            } else if (selectedTemplate === 'elegant') {
+                html = generateElegantTemplate(data);
+            }
 
-    const progress = document.getElementById("progressFill");
-    if(step === 2) progress.style.width = "66%";
-    if(step === 3) progress.style.width = "100%";
-}
+            document.getElementById('biodataPreview').innerHTML = html;
+            nextStep(3);
+        }
 
-function generatePreview() {
+        function generateClassicTemplate(data) {
+            return `
+                <div class="biodata-preview template-classic">
+                    <div class="header-section">
+                        <h1>BIODATA</h1>
+                        <p style="margin: 0; font-size: 1.1em;">For Marriage Proposal</p>
+                    </div>
 
-    const name = document.getElementById('name').value;
-    const age = document.getElementById('age').value;
-    const religion = document.getElementById('religion').value;
-    const education = document.getElementById('education').value;
-    const occupation = document.getElementById('occupation').value;
-    const family = document.getElementById('family').value;
+                    ${data.photo ? `
+                    <div class="photo-container">
+                        <img src="${data.photo}" alt="Photo">
+                    </div>
+                    ` : ''}
 
-    const preview = `
-        <h2 style="text-align:center;">Marriage Biodata</h2>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Age:</strong> ${age}</p>
-        <p><strong>Religion:</strong> ${religion}</p>
-        <p><strong>Education:</strong> ${education}</p>
-        <p><strong>Occupation:</strong> ${occupation}</p>
-        <p><strong>Family Details:</strong> ${family}</p>
-        <button onclick="window.print()" class="btn-primary">Download PDF</button>
-    `;
+                    <div class="info-section">
+                        <h3>Personal Details</h3>
+                        <div class="info-row">
+                            <div class="info-label">Full Name:</div>
+                            <div>${data.fullName}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Date of Birth:</div>
+                            <div>${data.dob}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Age:</div>
+                            <div>${data.age} Years</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Gender:</div>
+                            <div>${data.gender}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Height:</div>
+                            <div>${data.height}</div>
+                        </div>
+                        ${data.weight ? `
+                        <div class="info-row">
+                            <div class="info-label">Weight:</div>
+                            <div>${data.weight}</div>
+                        </div>
+                        ` : ''}
+                        <div class="info-row">
+                            <div class="info-label">Marital Status:</div>
+                            <div>${data.maritalStatus}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Religion:</div>
+                            <div>${data.religion}</div>
+                        </div>
+                        ${data.caste ? `
+                        <div class="info-row">
+                            <div class="info-label">Caste:</div>
+                            <div>${data.caste}</div>
+                        </div>
+                        ` : ''}
+                        <div class="info-row">
+                            <div class="info-label">Mother Tongue:</div>
+                            <div>${data.motherTongue}</div>
+                        </div>
+                    </div>
 
-    document.getElementById('previewSection').style.display = "block";
-    document.getElementById('previewSection').innerHTML = preview;
-}
+                    <div class="info-section">
+                        <h3>Educational & Professional Details</h3>
+                        <div class="info-row">
+                            <div class="info-label">Education:</div>
+                            <div>${data.education}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Occupation:</div>
+                            <div>${data.occupation}</div>
+                        </div>
+                        ${data.income ? `
+                        <div class="info-row">
+                            <div class="info-label">Annual Income:</div>
+                            <div>${data.income}</div>
+                        </div>
+                        ` : ''}
+                        ${data.company ? `
+                        <div class="info-row">
+                            <div class="info-label">Company:</div>
+                            <div>${data.company}</div>
+                        </div>
+                        ` : ''}
+                    </div>
 
-</script>
+                    <div class="info-section">
+                        <h3>Family Details</h3>
+                        <div class="info-row">
+                            <div class="info-label">Father's Name:</div>
+                            <div>${data.fatherName}</div>
+                        </div>
+                        ${data.fatherOccupation ? `
+                        <div class="info-row">
+                            <div class="info-label">Father's Occupation:</div>
+                            <div>${data.fatherOccupation}</div>
+                        </div>
+                        ` : ''}
+                        <div class="info-row">
+                            <div class="info-label">Mother's Name:</div>
+                            <div>${data.motherName}</div>
+                        </div>
+                        ${data.motherOccupation ? `
+                        <div class="info-row">
+                            <div class="info-label">Mother's Occupation:</div>
+                            <div>${data.motherOccupation}</div>
+                        </div>
+                        ` : ''}
+                        <div class="info-row">
+                            <div class="info-label">Siblings:</div>
+                            <div>${data.brothers} Brother(s), ${data.sisters} Sister(s)</div>
+                        </div>
+                        ${data.familyType ? `
+                        <div class="info-row">
+                            <div class="info-label">Family Type:</div>
+                            <div>${data.familyType}</div>
+                        </div>
+                        ` : ''}
+                    </div>
 
+                    <div class="info-section">
+                        <h3>Contact Details</h3>
+                        <div class="info-row">
+                            <div class="info-label">Mobile:</div>
+                            <div>${data.mobile}</div>
+                        </div>
+                        ${data.email ? `
+                        <div class="info-row">
+                            <div class="info-label">Email:</div>
+                            <div>${data.email}</div>
+                        </div>
+                        ` : ''}
+                        <div class="info-row">
+                            <div class="info-label">Address:</div>
+                            <div>${data.address}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">City:</div>
+                            <div>${data.city}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">State:</div>
+                            <div>${data.state}</div>
+                        </div>
+                    </div>
+
+                    ${data.aboutMe ? `
+                    <div class="info-section">
+                        <h3>About Me</h3>
+                        <p style="line-height: 1.6;">${data.aboutMe}</p>
+                    </div>
+                    ` : ''}
+
+                    ${data.expectations ? `
+                    <div class="info-section">
+                        <h3>Partner Expectations</h3>
+                        <p style="line-height: 1.6;">${data.expectations}</p>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        function generateModernTemplate(data) {
+            return `
+                <div class="biodata-preview template-modern">
+                    <div class="header-section">
+                        <h1>${data.fullName}</h1>
+                        <p style="margin: 0; opacity: 0.9;">Marriage Biodata</p>
+                    </div>
+
+                    ${data.photo ? `
+                    <div class="photo-container">
+                        <img src="${data.photo}" alt="Photo">
+                    </div>
+                    ` : ''}
+
+                    <div class="info-section">
+                        <h3>Personal Information</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <div class="info-label">Date of Birth</div>
+                                <div class="info-value">${data.dob}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Age</div>
+                                <div class="info-value">${data.age} Years</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Gender</div>
+                                <div class="info-value">${data.gender}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Height</div>
+                                <div class="info-value">${data.height}</div>
+                            </div>
+                            ${data.weight ? `
+                            <div class="info-item">
+                                <div class="info-label">Weight</div>
+                                <div class="info-value">${data.weight}</div>
+                            </div>
+                            ` : ''}
+                            <div class="info-item">
+                                <div class="info-label">Marital Status</div>
+                                <div class="info-value">${data.maritalStatus}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Religion</div>
+                                <div class="info-value">${data.religion}</div>
+                            </div>
+                            ${data.caste ? `
+                            <div class="info-item">
+                                <div class="info-label">Caste</div>
+                                <div class="info-value">${data.caste}</div>
+                            </div>
+                            ` : ''}
+                            <div class="info-item">
+                                <div class="info-label">Mother Tongue</div>
+                                <div class="info-value">${data.motherTongue}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-section">
+                        <h3>Education & Career</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <div class="info-label">Education</div>
+                                <div class="info-value">${data.education}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Occupation</div>
+                                <div class="info-value">${data.occupation}</div>
+                            </div>
+                            ${data.income ? `
+                            <div class="info-item">
+                                <div class="info-label">Annual Income</div>
+                                <div class="info-value">${data.income}</div>
+                            </div>
+                            ` : ''}
+                            ${data.company ? `
+                            <div class="info-item">
+                                <div class="info-label">Company</div>
+                                <div class="info-value">${data.company}</div>
+                            </div>
+                            ` : ''}
+                        </div>
+                    </div>
+
+                    <div class="info-section">
+                        <h3>Family Background</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <div class="info-label">Father's Name</div>
+                                <div class="info-value">${data.fatherName}</div>
+                            </div>
+                            ${data.fatherOccupation ? `
+                            <div class="info-item">
+                                <div class="info-label">Father's Occupation</div>
+                                <div class="info-value">${data.fatherOccupation}</div>
+                            </div>
+                            ` : ''}
+                            <div class="info-item">
+                                <div class="info-label">Mother's Name</div>
+                                <div class="info-value">${data.motherName}</div>
+                            </div>
+                            ${data.motherOccupation ? `
+                            <div class="info-item">
+                                <div class="info-label">Mother's Occupation</div>
+                                <div class="info-value">${data.motherOccupation}</div>
+                            </div>
+                            ` : ''}
+                            <div class="info-item">
+                                <div class="info-label">Siblings</div>
+                                <div class="info-value">${data.brothers} Brother(s), ${data.sisters} Sister(s)</div>
+                            </div>
+                            ${data.familyType ? `
+                            <div class="info-item">
+                                <div class="info-label">Family Type</div>
+                                <div class="info-value">${data.familyType}</div>
+                            </div>
+                            ` : ''}
+                        </div>
+                    </div>
+
+                    <div class="info-section">
+                        <h3>Contact Information</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <div class="info-label">Mobile</div>
+                                <div class="info-value">${data.mobile}</div>
+                            </div>
+                            ${data.email ? `
+                            <div class="info-item">
+                                <div class="info-label">Email</div>
+                                <div class="info-value">${data.email}</div>
+                            </div>
+                            ` : ''}
+                            <div class="info-item">
+                                <div class="info-label">City</div>
+                                <div class="info-value">${data.city}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">State</div>
+                                <div class="info-value">${data.state}</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 15px; background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                            <div class="info-label" style="margin-bottom: 5px;">Address</div>
+                            <div class="info-value">${data.address}</div>
+                        </div>
+                    </div>
+
+                    ${data.aboutMe ? `
+                    <div class="info-section">
+                        <h3>About Me</h3>
+                        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; line-height: 1.8;">
+                            ${data.aboutMe}
+                        </div>
+                    </div>
+                    ` : ''}
+
+                    ${data.expectations ? `
+                    <div class="info-section">
+                        <h3>Partner Expectations</h3>
+                        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; line-height: 1.8;">
+                            ${data.expectations}
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        function generateElegantTemplate(data) {
+            return `
+                <div class="biodata-preview template-elegant">
+                    <div class="header-section">
+                        <h1>BIODATA</h1>
+                        <div class="divider"></div>
+                        <p style="margin: 10px 0 0 0; color: #666; font-size: 1.1em;">${data.fullName}</p>
+                    </div>
+
+                    ${data.photo ? `
+                    <div class="photo-container">
+                        <img src="${data.photo}" alt="Photo">
+                    </div>
+                    ` : ''}
+
+                    <div class="info-section">
+                        <h3>Personal Details</h3>
+                        <div class="info-row">
+                            <div class="info-label">Date of Birth</div>
+                            <div class="info-value">${data.dob}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Age</div>
+                            <div class="info-value">${data.age} Years</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Gender</div>
+                            <div class="info-value">${data.gender}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Height</div>
+                            <div class="info-value">${data.height}</div>
+                        </div>
+                        ${data.weight ? `
+                        <div class="info-row">
+                            <div class="info-label">Weight</div>
+                            <div class="info-value">${data.weight}</div>
+                        </div>
+                        ` : ''}
+                        <div class="info-row">
+                            <div class="info-label">Marital Status</div>
+                            <div class="info-value">${data.maritalStatus}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Religion</div>
+                            <div class="info-value">${data.religion}</div>
+                        </div>
+                        ${data.caste ? `
+                        <div class="info-row">
+                            <div class="info-label">Caste</div>
+                            <div class="info-value">${data.caste}</div>
+                        </div>
+                        ` : ''}
+                        <div class="info-row">
+                            <div class="info-label">Mother Tongue</div>
+                            <div class="info-value">${data.motherTongue}</div>
+                        </div>
+                    </div>
+
+                    <div class="info-section">
+                        <h3>Educational & Professional Background</h3>
+                        <div class="info-row">
+                            <div class="info-label">Education</div>
+                            <div class="info-value">${data.education}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Occupation</div>
+                            <div class="info-value">${data.occupation}</div>
+                        </div>
+                        ${data.income ? `
+                        <div class="info-row">
+                            <div class="info-label">Annual Income</div>
+                            <div class="info-value">${data.income}</div>
+                        </div>
+                        ` : ''}
+                        ${data.company ? `
+                        <div class="info-row">
+                            <div class="info-label">Company</div>
+                            <div class="info-value">${data.company}</div>
+                        </div>
+                        ` : ''}
+                    </div>
+
+                    <div class="info-section">
+                        <h3>Family Information</h3>
+                        <div class="info-row">
+                            <div class="info-label">Father's Name</div>
+                            <div class="info-value">${data.fatherName}</div>
+                        </div>
+                        ${data.fatherOccupation ? `
+                        <div class="info-row">
+                            <div class="info-label">Father's Occupation</div>
+                            <div class="info-value">${data.fatherOccupation}</div>
+                        </div>
+                        ` : ''}
+                        <div class="info-row">
+                            <div class="info-label">Mother's Name</div>
+                            <div class="info-value">${data.motherName}</div>
+                        </div>
+                        ${data.motherOccupation ? `
+                        <div class="info-row">
+                            <div class="info-label">Mother's Occupation</div>
+                            <div class="info-value">${data.motherOccupation}</div>
+                        </div>
+                        ` : ''}
+                        <div class="info-row">
+                            <div class="info-label">Siblings</div>
+                            <div class="info-value">${data.brothers} Brother(s), ${data.sisters} Sister(s)</div>
+                        </div>
+                        ${data.familyType ? `
+                        <div class="info-row">
+                            <div class="info-label">Family Type</div>
+                            <div class="info-value">${data.familyType}</div>
+                        </div>
+                        ` : ''}
+                    </div>
+
+                    <div class="info-section">
+                        <h3>Contact Details</h3>
+                        <div class="info-row">
+                            <div class="info-label">Mobile Number</div>
+                            <div class="info-value">${data.mobile}</div>
+                        </div>
+                        ${data.email ? `
+                        <div class="info-row">
+                            <div class="info-label">Email Address</div>
+                            <div class="info-value">${data.email}</div>
+                        </div>
+                        ` : ''}
+                        <div class="info-row">
+                            <div class="info-label">Address</div>
+                            <div class="info-value">${data.address}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">City</div>
+                            <div class="info-value">${data.city}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">State</div>
+                            <div class="info-value">${data.state}</div>
+                        </div>
+                    </div>
+
+                    ${data.aboutMe ? `
+                    <div class="info-section">
+                        <h3>About Me</h3>
+                        <p style="line-height: 1.8; color: #555;">${data.aboutMe}</p>
+                    </div>
+                    ` : ''}
+
+                    ${data.expectations ? `
+                    <div class="info-section">
+                        <h3>Partner Expectations</h3>
+                        <p style="line-height: 1.8; color: #555;">${data.expectations}</p>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        async function downloadPDF() {
+            const element = document.getElementById('biodataPreview');
+            const button = event.target;
+            
+            button.disabled = true;
+            button.textContent = '⏳ Generating PDF...';
+
+            try {
+                const canvas = await html2canvas(element, {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    backgroundColor: '#ffffff'
+                });
+
+                const imgWidth = 210; // A4 width in mm
+                const pageHeight = 297; // A4 height in mm
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                
+                let heightLeft = imgHeight;
+                let position = 0;
+
+                pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+
+                while (heightLeft >= 0) {
+                    position = heightLeft - imgHeight;
+                    pdf.addPage();
+                    pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                }
+
+                const fileName = document.getElementById('fullName').value.replace(/\s+/g, '_') + '_Biodata.pdf';
+                pdf.save(fileName);
+
+                button.textContent = '✓ Downloaded!';
+                setTimeout(() => {
+                    button.textContent = '📥 Download as PDF';
+                    button.disabled = false;
+                }, 2000);
+            } catch (error) {
+                console.error('Error generating PDF:', error);
+                alert('Error generating PDF. Please try again.');
+                button.textContent = '📥 Download as PDF';
+                button.disabled = false;
+            }
+        }
+
+        // Initialize with first template selected
+        document.querySelector('.template-card').classList.add('selected');
+    </script>
 </body>
 </html>
